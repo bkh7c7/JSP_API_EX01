@@ -42,10 +42,11 @@
                         <a class="nav-link disabled" href="#">Disabled</a>
                     </li>
                 </ul>
+                <%--
                 <form class="form-inline mt-2 mt-md-0">
                     <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </form>
+                </form>--%>
             </div>
         </nav>
     </header>
@@ -79,7 +80,7 @@
         <p id="popUpNameId" style="text-align: center; font: inherit; color: black;margin-top:10px;"></p>
     </div>
     <div>
-        <img id="postImgId" src="" alt="no picture" style="width:65%;height:50%;margin-left: 17%; margin-top:10px;">
+        <img id="postImgId" src="" alt="no picture" style="width:65%;height:50%;margin-left: 17%; margin-top:20px;">
     </div>
 </div>
 
@@ -107,7 +108,7 @@
 
             //sorting 쪽 클릭시에도 이벤트를 타기 때문에 validation 처리를 해줘야한다.
             if (dtTable.row(this).data() == undefined) return;
-            //alert(dtTable.row(this).data());
+            $("#loadingId").css("display", "block");
             GetMovieImg(dtTable.row(this).data()[2]);
         });
 
@@ -188,6 +189,7 @@
                 $('#popUpNameId').text(movieNM);
                 $('.custom-popupBackground').css('display', 'block');
                 $('.custom-popup').css('display', 'block');
+                $("#loadingId").css("display", "none");
 
             },
             fail   : function (error) {
