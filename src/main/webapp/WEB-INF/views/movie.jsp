@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
 <html lang="en">
 <head>
@@ -19,11 +18,6 @@
     <script src="/resources/js/datatables.min.js"></script>
     <script src="/resources/js/popper.min.js"></script>
     <script src="/resources/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#dtTableId').DataTable();
-        });
-    </script>
 </head>
 
 <body>
@@ -31,7 +25,7 @@
     <header>
         <!-- Fixed navbar -->
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            <a class="navbar-brand" href="#">Fixed navbar</a>
+            <a class="navbar-brand" href="#">Weekly Box Office</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
                     aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -58,7 +52,7 @@
 
     <!-- Begin page content -->
     <main role="main" class="container">
-        <h1 id="movieListNameId" class="mt-5"></h1>
+        <h3 id="movieListNameId" class="mt-5"></h3>
         <table id="dtTableId">
             <thead>
             <tr>
@@ -77,29 +71,49 @@
         </div>
     </footer>
 </div>
-<div id="loadingId" class="LoadingBack" display="block"></div>
+<div id="loadingId" class="LoadingBack"></div>
+<div class="custom-popupBackground" style="display:none;"></div>
+<div class="custom-popup" style="display:none;">
+
+    <div style="width: 100%;height: 30px; background-color: ghostwhite; position: relative;border-bottom: 1px solid #bcbcbc;">
+        <p id="popUpNameId" style="text-align: center; font: inherit; color: black;margin-top:10px;"></p>
+    </div>
+    <div>
+        <img id="postImgId" src="" alt="no picture" style="width:65%;height:50%;margin-left: 17%; margin-top:10px;">
+    </div>
+</div>
+
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <script type="text/javascript">
     $(document).ready(function () {
 
-        var dtTable  = $('#dtTableId').DataTable({
-            destroy: true,
-            dom : 'l<"right" Bf>rtip',
-            buttons : [ {
-                text : 'Download',
-                extend : 'excelHtml5'
-            } ],
+        var dtTable = $('#dtTableId').DataTable({
+            destroy   : true,
+            dom       : 'l<"right" Bf>rtip',
+            buttons   : [{
+                text  : 'Download',
+                extend: 'excelHtml5'
+            }],
             columnDefs: [
-                { targets: [0,1,2,3], className: 'text-center'  },
+                {targets: [0, 1, 2, 3], className: 'text-center'},
             ],
-            order:[[0,'asc']]
+            order     : [[0, 'asc']]
         });
 
-        $('#dtTableId').on('click','tr',function() {
-            alert(dtTable.row(this).data());
-            //intentPopupOpen(intentTable.row(this).data()[0], intentTable.row(this).data()[1], intentTable.row(this).data()[2]);
+        // datatable 클릭 시 이벤트
+        $('#dtTableId').on('click', 'tr', function () {
+
+            //sorting 쪽 클릭시에도 이벤트를 타기 때문에 validation 처리를 해줘야한다.
+            if (dtTable.row(this).data() == undefined) return;
+            //alert(dtTable.row(this).data());
+            GetMovieImg(dtTable.row(this).data()[2]);
+        });
+
+        $('.custom-popupBackground').on('click', function () {
+            $('.custom-popupBackground').css('display', 'none');
+            $('.custom-popup').css('display', 'none');
         });
     });
 
@@ -107,10 +121,10 @@
     GetMovieData = function () {
         var movieUrl = 'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList.json';
         $.ajax({
-            type: 'get',
-            url: movieUrl,
-            data: {
-                key: 'af37486b34faf383c8128272965a2fac',
+            type   : 'get',
+            url    : movieUrl,
+            data   : {
+                key     : 'af37486b34faf383c8128272965a2fac',
                 targetDt: '20200601'
             },
             success: function (result) {
@@ -120,7 +134,7 @@
                 console.log(result);
                 var resultData = result.boxOfficeResult;
                 console.log(resultData.weeklyBoxOfficeList);
-                $("#movieListNameId").text(resultData.boxofficeType + ' (' + resultData.showRange + ')');
+                $("#movieListNameId").text('Weekend Movie Top 10 List' + ' (' + resultData.showRange + ')');
 
                 $('#dtTableId').dataTable().fnClearTable();
                 for (var i = 0; i < resultData.weeklyBoxOfficeList.length; i++) {
@@ -130,30 +144,57 @@
                             resultData.weeklyBoxOfficeList[i].openDt,
                             resultData.weeklyBoxOfficeList[i].movieNm,
                             resultData.weeklyBoxOfficeList[i].audiAcc
-                       ]
+                        ]
                     );
                 }
 
             },
-            fail: function (error) {
+            fail   : function (error) {
                 console.error(error);
             }
         });
     }
 
-    GetMovieList = function(){
+    GetMovieList = function () {
         $.ajax({
-            type: 'get',
-            url: 'http://localhost:8080/GetMovieList',
-            data: null,
+            type   : 'get',
+            url    : 'http://localhost:8080/GetMovieList',
+            data   : null,
             success: function (result) {
-                console.log(result)
                 console.log(JSON.parse(result));
             },
-            fail: function (error) {
+            fail   : function (error) {
                 console.error(error);
             }
         });
+    }
+
+    GetMovieImg = function (movieNM) {
+        if (movieNM == "" | null) return;
+
+        $.ajax({
+            type   : 'get',
+            url    : "https://movie.naver.com/movie/search/result.nhn",
+            data   : {
+                query  : movieNM.trim(),
+                section: 'all',
+                ie     : 'utf8'
+            },
+            success: function (result) {
+
+                var imgUrl = $($($(result).find('.search_list_1').children()[0]).find('p')).find('img').attr("src");
+                console.log(imgUrl);
+                $('#postImgId').attr("src", imgUrl);
+                $('#popUpNameId').text(movieNM);
+                $('.custom-popupBackground').css('display', 'block');
+                $('.custom-popup').css('display', 'block');
+
+            },
+            fail   : function (error) {
+                console.error(error);
+            }
+        });
+
     }
 
     GetMovieData();
