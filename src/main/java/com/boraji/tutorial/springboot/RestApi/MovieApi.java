@@ -1,5 +1,6 @@
 package com.boraji.tutorial.springboot.RestApi;
 
+import com.boraji.tutorial.springboot.Models.MovieParam;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,7 @@ import java.util.Map;
 @RestController
 public class MovieApi {
     @GetMapping("/GetMovieList")
-    public String getMovieList(){
+    public String getMovieList(MovieParam movieParam){
 
         HashMap<String, Object> result = new HashMap<String, Object>();
 
@@ -28,9 +29,11 @@ public class MovieApi {
 
         try{
 
+            //connection time out setting part
             /*HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
             factory.setConnectTimeout(5000);
             factory.setReadTimeout(5000);*/
+
             RestTemplate restTemplate = new RestTemplate();
 
             HttpHeaders headers = new HttpHeaders();
