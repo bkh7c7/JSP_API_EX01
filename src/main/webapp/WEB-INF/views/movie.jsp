@@ -63,9 +63,9 @@
                 <input id="toDateID" name="toDateID" class="datepicker" data-date-format="mm/dd/yyyy"
                        style="display: none;"/>
                 <input type="text" name="weekly" list="weeklyDataYear" placeholder="year.."/>
-                    <datalist id="weeklyDataYear"></datalist>
+                <datalist id="weeklyDataYear"></datalist>
                 <input type="text" name="weekly" list="weeklyDataWeek" placeholder="week.."/>
-                    <datalist id="weeklyDataWeek"></datalist>
+                <datalist id="weeklyDataWeek"></datalist>
                 <input type="submit" value="Search"/>
             </form>
         </div>
@@ -193,7 +193,7 @@
         GetMovieList = function () {
             $.ajax({
                 type: 'get',
-                url: 'http://localhost:8080/GetMovieList',
+                url: 'GetMovieList',
                 data: null,
                 success: function (result) {
                     console.log(JSON.parse(result));

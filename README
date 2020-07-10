@@ -1,0 +1,9 @@
+# 설명
+ - 영화 진흥 위원회의 open api에서 data를 받아 목록을 보여주는 화면
+ 
+# 부가적인 설명
+ - JQuery Datatable을 사용하여 게시판 목록을 보여주였고,
+ - 영.진.위의 open-api data에는 영화에 대한 string data들로만 이루어져 있어
+   naver movie에서 해당 영화의 포스트 이미지를 가져와서 보여주었다.(클릭 시 보여줌)
+   크롤링 형식으로 가져오는 것이라 CORS를 위해 Access-Control-Allow-Origin을 사용하여 확인하였다.
+   
